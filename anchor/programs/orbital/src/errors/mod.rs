@@ -1,0 +1,176 @@
+use anchor_lang::prelude::*;
+
+#[error_code]
+pub enum OrbitalError {
+    // ── Math Errors ──
+    #[msg("Math overflow in fixed-point operation")]
+    MathOverflow,
+
+    #[msg("Division by zero")]
+    DivisionByZero,
+
+    #[msg("Square root of negative number")]
+    SqrtNegative,
+
+    // ── Invariant Errors ──
+    #[msg("Sphere invariant violated: ||r - x||^2 != r^2")]
+    InvariantViolation,
+
+    #[msg("Torus invariant computation failed")]
+    TorusInvariantError,
+
+    // ── Pool Errors ──
+    #[msg("Pool already initialized")]
+    PoolAlreadyInitialized,
+
+    #[msg("Invalid number of assets (must be 2..=8)")]
+    InvalidAssetCount,
+
+    #[msg("Invalid fee rate")]
+    InvalidFeeRate,
+
+    #[msg("Insufficient liquidity for swap")]
+    InsufficientLiquidity,
+
+    #[msg("Pool is not active")]
+    PoolNotActive,
+
+    #[msg("Slippage tolerance exceeded")]
+    SlippageExceeded,
+
+    #[msg("Same token swap not allowed")]
+    SameTokenSwap,
+
+    #[msg("Invalid token index")]
+    InvalidTokenIndex,
+
+    // ── Tick Errors ──
+    #[msg("Invalid tick bound k")]
+    InvalidTickBound,
+
+    #[msg("Tick crossing detected but not handled")]
+    UnhandledTickCrossing,
+
+    // ── Newton Solver Errors ──
+    #[msg("Newton solver diverged")]
+    NewtonDivergence,
+
+    #[msg("Solver did not converge within max iterations")]
+    SolverDidNotConverge,
+
+    // ── Liquidity Errors ──
+    #[msg("Invalid liquidity amount")]
+    InvalidLiquidityAmount,
+
+    #[msg("Trade amount must be non-negative")]
+    NegativeTradeAmount,
+
+    #[msg("Position not found")]
+    PositionNotFound,
+
+    #[msg("Insufficient position balance")]
+    InsufficientPositionBalance,
+
+    // ── Policy Errors ──
+    #[msg("Unauthorized: caller not in allowlist")]
+    Unauthorized,
+
+    #[msg("Policy not found")]
+    PolicyNotFound,
+
+    #[msg("Trade exceeds policy limit")]
+    PolicyLimitExceeded,
+
+    #[msg("Allowlist is full")]
+    AllowlistFull,
+
+    #[msg("Address already in allowlist")]
+    AlreadyInAllowlist,
+
+    #[msg("Address not in allowlist")]
+    NotInAllowlist,
+
+    // ── Settlement Errors ──
+    #[msg("Settlement policy check failed")]
+    SettlementPolicyViolation,
+
+    #[msg("Invalid settlement amount")]
+    InvalidSettlementAmount,
+
+    #[msg("Settlement audit trail creation failed")]
+    AuditTrailError,
+
+    // ── Pool Validation (new variants appended to preserve existing error discriminants) ──
+    #[msg("Duplicate token mint in pool")]
+    DuplicateTokenMint,
+
+    #[msg("Reserve exceeds sphere radius — swap would cross branch boundary")]
+    ReserveExceedsRadius,
+
+    #[msg("Wrong number of remaining accounts (expected 3 × n_assets)")]
+    InvalidRemainingAccounts,
+
+    #[msg("Vault PDA address does not match expected derivation")]
+    InvalidVaultAddress,
+
+    #[msg("Withdrawal too small: all token returns round to zero")]
+    WithdrawalTooSmall,
+
+    #[msg("Swap output rounds to zero after truncation")]
+    SwapOutputTooSmall,
+
+    #[msg("No fields to update")]
+    NoFieldsToUpdate,
+
+    #[msg("Daily volume limit exceeded")]
+    DailyVolumeLimitExceeded,
+
+    #[msg("All pool tokens must have the same number of decimals")]
+    DecimalsMismatch,
+
+    #[msg("Cannot close pool: outstanding LP liquidity exists")]
+    PoolNotEmpty,
+
+    #[msg("Tick account has invalid owner or discriminator")]
+    InvalidTickAccount,
+
+    #[msg("No tick matched the crossing k value")]
+    TickCrossingFailed,
+
+    #[msg("Failed to serialize tick state back to account")]
+    TickSerializationFailed,
+
+    #[msg("Tick account does not belong to this pool")]
+    TickPoolMismatch,
+
+    #[msg("Duplicate tick account in remaining_accounts")]
+    DuplicateTickAccount,
+
+    #[msg("Maximum tick count reached (16)")]
+    MaxTicksReached,
+
+    #[msg("Cannot close tick: liquidity is non-zero")]
+    TickHasLiquidity,
+
+    // ── KYC/KYT/AML Compliance Errors ──
+    #[msg("KYC status is not Verified")]
+    KycNotVerified,
+
+    #[msg("KYC verification has expired")]
+    KycExpired,
+
+    #[msg("Risk score exceeds policy threshold")]
+    RiskScoreExceeded,
+
+    #[msg("AML clearance required")]
+    AmlNotCleared,
+
+    #[msg("Jurisdiction not in allowed list")]
+    JurisdictionNotAllowed,
+
+    #[msg("Travel Rule data required for this settlement amount")]
+    TravelRuleRequired,
+
+    #[msg("Invalid risk score (must be 0-100)")]
+    InvalidRiskScore,
+}

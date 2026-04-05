@@ -1,0 +1,24 @@
+{
+  "date": "2026-03-28",
+  "url": "http://localhost:3000",
+  "healthScore": 95,
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "title": "Hydration mismatch on caret-color style",
+      "severity": "medium",
+      "category": "console",
+      "status": "deferred"
+    }
+  ],
+  "categoryScores": {
+    "console": 85,
+    "links": 100,
+    "visual": 100,
+    "functional": 100,
+    "ux": 95,
+    "performance": 95,
+    "content": 100,
+    "accessibility": 90
+  }
+}
