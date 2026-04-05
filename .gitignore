@@ -51,3 +51,5 @@ next-env.d.ts
 scripts/node_modules/
 scripts/.dist/
 scripts/mock-*-mint.json
+.gstack
+app/.gstack

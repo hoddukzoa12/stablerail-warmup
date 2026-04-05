@@ -75,17 +75,52 @@ StableRail combines **three innovations in one protocol**:
 
 ---
 
-## Why Solana?
+## Why Solana? (Not Ethereum, Not L2s)
 
-Orbital AMM was designed on paper but never deployed to a production-grade L1. Solana is the **ideal chain** for this:
+Paradigm designed Orbital on paper. The only existing implementation ([agrawalx/orbital-pool](https://github.com/agrawalx/orbital-pool)) targets **Arbitrum Stylus** — an EVM L2. We chose Solana instead, and here's why:
 
-| Solana Feature | StableRail Benefit |
+### Orbital's math is too expensive for EVM
+
+A single Orbital swap involves sphere invariant verification, multi-tick traversal, boundary detection, and analytical solving. On EVM chains:
+
+| Operation | EVM Gas Cost | Solana CU Cost |
+|---|---|---|
+| Q64.64 multiply + shift | ~500 gas | ~10 CU |
+| Sphere invariant check (n=3) | ~15,000 gas | ~300 CU |
+| Multi-tick swap (3 segments) | ~150,000+ gas | ~50,000 CU |
+| **Total swap cost** | **$0.50–$5.00** (Ethereum L1) | **<$0.01** |
+| | **$0.02–$0.10** (Arbitrum) | |
+
+Orbital's design *assumes* cheap computation. Solana's 1.4M compute unit budget per transaction gives Orbital the headroom it needs. On Ethereum L1, a 3-segment tick-crossing swap would cost $5+ in gas — making it uncompetitive with Curve.
+
+### Institutional settlement needs finality speed
+
+StableRail's institutional settlement layer (policy check → KYC verify → swap execute → audit log) requires **4 on-chain operations in sequence**. Finality comparison:
+
+| Chain | Finality | Settlement Roundtrip |
+|---|---|---|
+| Ethereum L1 | ~12 min (2 epochs) | Minutes |
+| Arbitrum | ~7 min (L1 confirmation) | Minutes |
+| **Solana** | **~400ms (1 slot)** | **<2 seconds** |
+
+For institutional treasury operations processing millions daily, the difference between 7 minutes and 2 seconds is the difference between adoption and rejection.
+
+### Solana's account model fits Orbital's architecture
+
+| Solana Feature | Why It Matters for Orbital |
 |---|---|
-| **400ms block times** | Real-time swap execution — institutional settlement confirms in <1 second |
-| **Sub-cent fees** | Micro-swaps viable — LPs can rebalance frequently without fee friction |
-| **Parallel execution (Sealevel)** | Multiple independent swaps can execute simultaneously across asset pairs |
-| **PDAs & account model** | Tick accounts, LP positions, and audit trails are natively composable on-chain |
-| **SPL Token standard** | Unified token interface for USDC, USDT, PYUSD — no wrapper overhead |
+| **PDAs (Program Derived Addresses)** | Each tick, LP position, policy, and audit entry is a separate on-chain account — no storage slot collisions, no mapping overhead |
+| **Parallel execution (Sealevel)** | Swaps across different asset pairs execute simultaneously — EVM processes them sequentially |
+| **`remaining_accounts`** | Tick accounts are passed dynamically at runtime — enabling variable-depth tick traversal without hardcoding |
+| **SPL Token standard** | USDC, USDT, PYUSD are all native SPL tokens — no WETH-style wrapping, no bridge risk |
+| **Anchor framework** | Type-safe account validation, automatic PDA derivation, and built-in access control — reduces smart contract attack surface |
+
+### The stablecoin opportunity is on Solana
+
+- **$2B+ daily** stablecoin DEX volume on Solana (2025)
+- Native issuance: USDC (Circle), USDT (Tether), PYUSD (PayPal) all deployed natively
+- Jupiter aggregator routes 70%+ of Solana DEX volume — StableRail integrates as a single CPI call
+- No existing Orbital implementation on Solana — **first-mover advantage**
 
 ---
 
